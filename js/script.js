@@ -2,23 +2,10 @@
 Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
 ******************************************/
-   
-// Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
-
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
-
-
-
+//Declare all the global variables 
+const itemsPerPage = 10; //How many items we want to show per page. This can be adjusted.
+const listItems = document.querySelectorAll('li.student-item'); //This gets all the list item elements that contain the students
 
 /*** 
    Create the `showPage` function to hide all of the items in the 
@@ -35,6 +22,23 @@ FSJS project 2 - List Filter and Pagination
        "invoke" the function 
 ***/
 
+const showPage = (list, page) => {
+
+   //Variables used to calculate what elements we need on each page
+   const startIndex = (page * itemsPerPage) - itemsPerPage;
+   const endIndex = page * itemsPerPage;
+
+   //Now we need to loop over the list of elements and hide elements that aren't appropriate for the current page 
+   for(let i = 0; i < list.length; i++) {
+      const currentListItem = list[i]; //This is the current item in the loop
+      
+      if(i >= startIndex & i < endIndex) { //We are checking if the current item belongs on this page!
+         currentListItem.style.display = ''; //If so, we need to unhide it. We can just clear the display property since it is not set in-line.
+      } else {
+         currentListItem.style.display = 'none'; //Otherwise it needs to be hidden
+      }
+   }
+}
 
 
 
@@ -43,7 +47,57 @@ FSJS project 2 - List Filter and Pagination
    functionality to the pagination buttons.
 ***/
 
+const appendPageLinks = list => {
 
+   const numOfPagesNeeded = Math.ceil(list.length / itemsPerPage);
+
+   const paginationDiv = document.createElement('div'); //Create the main pagination div and set the class
+   paginationDiv.className = "pagination"
+
+   const ul = document.createElement('ul');
+   
+   for (let i = 1; i <= numOfPagesNeeded; i++) {
+      const pageLi = document.createElement('li');
+      const pageLink = document.createElement('a');
+      pageLink.href = '#';
+      pageLink.textContent = i;
+      pageLink.addEventListener('click', () => {handlePaginationClick(i)});
+      if(i == 1) {
+         pageLink.className = "active";
+      }
+      pageLi.appendChild(pageLink);
+      ul.appendChild(pageLi);
+   }   
+   
+   paginationDiv.appendChild(ul);
+   // Now we need to add the pagination div to the page
+   const pageDiv = document.querySelector('div.page'); //First we need to select the pageDiv it needs appending to
+   pageDiv.appendChild(paginationDiv);
+
+}
+
+const handlePaginationClick = page => {
+   showPage(listItems, page);
+
+   //We now need to remove any pagination active classes and replace it on the correct element
+   const paginationLinks = document.querySelectorAll('div.pagination > ul > li > a');
+   
+   for(let i = 0; i < paginationLinks.length; i++) {
+      paginationLinks[i].className = '';
+   }
+
+   for(let i = 0; i < paginationLinks.length; i++) {
+      const currentLink = paginationLinks[i];
+      
+      if (currentLink.textContent == page) {
+         currentLink.className = "active";
+      }
+   }
+
+}
+
+showPage(listItems, 1);
+appendPageLinks(listItems);
 
 
 
