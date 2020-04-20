@@ -7,24 +7,15 @@ FSJS project 2 - List Filter and Pagination
 const itemsPerPage = 10; //How many items we want to show per page. This can be adjusted.
 const listItems = document.querySelectorAll('li.student-item'); //This gets all the list item elements that contain the students
 
-/*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
+/*
 
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
-***/
+This function shows the relevant page of list items.
+It takes the list and the page and hides elements that aren't needed and shows the one's that are.
+*/
 
 const showPage = (list, page) => {
 
-   //Variables used to calculate what elements we need on each page
+   //Variables used to calculate which elements we need to show on each page
    const startIndex = (page * itemsPerPage) - itemsPerPage;
    const endIndex = page * itemsPerPage;
 
@@ -43,33 +34,33 @@ const showPage = (list, page) => {
 
 
 /*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
+   This function creates the Pagination links and adds them to the bottom of the page.
+   We also add click hande
 ***/
 
 const appendPageLinks = list => {
 
-   const numOfPagesNeeded = Math.ceil(list.length / itemsPerPage);
+   const numOfPagesNeeded = Math.ceil(list.length / itemsPerPage); //Calculating the number of pages we need. We need to round it up as we can't have half a page!
 
    const paginationDiv = document.createElement('div'); //Create the main pagination div and set the class
    paginationDiv.className = "pagination"
 
-   const ul = document.createElement('ul');
+   const ul = document.createElement('ul'); //Create the ul that we then add list items to for each page
    
-   for (let i = 1; i <= numOfPagesNeeded; i++) {
-      const pageLi = document.createElement('li');
+   for (let i = 1; i <= numOfPagesNeeded; i++) { //This loops creates each page. As we don't want a page 0, we start at 1
+      const pageLi = document.createElement('li'); 
       const pageLink = document.createElement('a');
       pageLink.href = '#';
       pageLink.textContent = i;
       pageLink.addEventListener('click', () => {handlePaginationClick(i)});
-      if(i == 1) {
+      if(i == 1) { //We need to set the first link to have a class of active for the first page load
          pageLink.className = "active";
       }
-      pageLi.appendChild(pageLink);
-      ul.appendChild(pageLi);
+      pageLi.appendChild(pageLink); //We add the link to the li created for this page
+      ul.appendChild(pageLi); //Then add the li to the ul
    }   
    
-   paginationDiv.appendChild(ul);
+   paginationDiv.appendChild(ul); //Now the ul is complete, we add it to our pagination div
    // Now we need to add the pagination div to the page
    const pageDiv = document.querySelector('div.page'); //First we need to select the pageDiv it needs appending to
    pageDiv.appendChild(paginationDiv);
