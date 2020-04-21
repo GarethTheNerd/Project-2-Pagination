@@ -35,10 +35,17 @@ const showPage = (list, page) => {
 
 /*** 
    This function creates the Pagination links and adds them to the bottom of the page.
-   We also add click hande
+   We also add the click handeler to the links
 ***/
 
 const appendPageLinks = list => {
+
+   //I'm going to remove any existing pagination links first. This is so we can re-use this function for the search
+   const existingPagination = document.querySelector('div.pagination');
+   if (existingPagination) {
+      const pageDiv = document.querySelector('div.page');
+      pageDiv.removeChild(existingPagination);
+   }
 
    const numOfPagesNeeded = Math.ceil(list.length / itemsPerPage); //Calculating the number of pages we need. We need to round it up as we can't have half a page!
 
@@ -67,29 +74,110 @@ const appendPageLinks = list => {
 
 }
 
+/* 
+This function creates the elements for the search (search box, button and no results message)
+*/
+
+const createSearch = () => {
+   
+   //Create the search Div
+   const searchDiv = document.createElement('div');
+   searchDiv.className = 'student-search';
+
+   //Create the search input field
+   const searchInput = document.createElement('input');
+   searchInput.placeholder = 'Search for students...';
+   //Add the search input to the search div
+   searchDiv.appendChild(searchInput);
+
+   //Create the button and set it's properties
+   const searchButton = document.createElement('button');
+   searchButton.textContent = 'Search';
+   searchButton.addEventListener('click', () => {Search(searchInput.value, listItems)});
+   //Add the search button to the search div
+   searchDiv.appendChild(searchButton);
+
+   //Now I'll add the completed search div to the page
+   const pageHeader = document.querySelector('div.page-header');    
+   pageHeader.appendChild(searchDiv);
+
+    //I'm also going to create the no results found message (and hide it) for use later
+    const noResultsSpan = document.createElement('span');
+    noResultsSpan.classList.add('no-results');
+    noResultsSpan.textContent = 'No results to show.';
+    noResultsSpan.style.display = 'none';
+   //We'll insert it before the ul
+   const pageDiv = document.querySelector('div.page');
+   const studentList = document.querySelector('ul.student-list');
+   pageDiv.insertBefore(noResultsSpan, studentList);
+
+}
+
+//This function handles the user clicking on a pagination link
 const handlePaginationClick = page => {
+   //This shows the page number that's been clicked
    showPage(listItems, page);
 
-   //We now need to remove any pagination active classes and replace it on the correct element
+   //Getting all the pagination links to fix the active class
    const paginationLinks = document.querySelectorAll('div.pagination > ul > li > a');
-   
+   //We will now need to loop through the pagination links and remove any classes of active
    for(let i = 0; i < paginationLinks.length; i++) {
       paginationLinks[i].className = '';
    }
-
+   //now we loop through the pagination links and put the active class on the correct one
    for(let i = 0; i < paginationLinks.length; i++) {
       const currentLink = paginationLinks[i];
-      
+      //Thos checks if we are currently looking at the current page
       if (currentLink.textContent == page) {
-         currentLink.className = "active";
+         currentLink.className = "active"; //So we set the active class
       }
+   }
+}
+
+//This function handles a search when it is run
+const Search = (searchTerm, list) => {
+
+//We are going through all of our list items (passed in). Checking if they matching our search term
+for(let i = 0; i < list.length; i++) {
+
+   const currentStudent = list[i];
+
+   //Now we get the current students name, email and joined date
+   const studentName = currentStudent.querySelector('div.student-details > h3').textContent;
+   const studentEmail = currentStudent.querySelector('div.student-details > span.email').textContent;
+   const studentJoined = currentStudent.querySelector('div.joined-details > span.date').textContent;
+   
+   //Checking if the searchTerm exists on any of the users properties (name, email and join date)
+   if (studentName.includes(searchTerm) || studentEmail.includes(searchTerm) || studentJoined.includes(searchTerm)) {
+      currentStudent.style.display = ''; //The user has been found so lets unhide them
+      currentStudent.classList.add('search-found'); //Found this function on MDN
+   } else {
+      currentStudent.style.display = 'none'; //hide the user
+      currentStudent.classList.remove('search-found'); //Found this function on MDN
    }
 
 }
 
+//Create a list of students that are showing so we can pass to our existing functions
+const resultsListItems = document.querySelectorAll('li.search-found');
+
+//let's check the amount of results and show / hide the no results text
+const noResultsText = document.querySelector('span.no-results'); //get the no results span
+if (resultsListItems.length === 0) { //check if we have no results
+   noResultsText.style.display = ''; //show the no results text
+} else {
+   noResultsText.style.display = 'none'; //hide the no results text
+}
+//We will now use our existing functions to setup our pagination
+appendPageLinks(resultsListItems);
+showPage(resultsListItems, 1);
+
+}
+
+//initalise the page by running our inital functions!
+createSearch();
 showPage(listItems, 1);
 appendPageLinks(listItems);
 
 
 
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
