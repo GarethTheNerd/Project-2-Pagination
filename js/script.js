@@ -59,7 +59,7 @@ const appendPageLinks = list => {
       const pageLink = document.createElement('a');
       pageLink.href = '#';
       pageLink.textContent = i;
-      pageLink.addEventListener('click', () => {handlePaginationClick(i)});
+      pageLink.addEventListener('click', () => {handlePaginationClick(list, i)});
       if(i == 1) { //We need to set the first link to have a class of active for the first page load
          pageLink.className = "active";
       }
@@ -114,9 +114,9 @@ const createSearch = () => {
 }
 
 //This function handles the user clicking on a pagination link
-const handlePaginationClick = page => {
+const handlePaginationClick = (list, page) => {
    //This shows the page number that's been clicked
-   showPage(listItems, page);
+   showPage(list, page);
 
    //Getting all the pagination links to fix the active class
    const paginationLinks = document.querySelectorAll('div.pagination > ul > li > a');
